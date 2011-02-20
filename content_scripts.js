@@ -82,6 +82,7 @@ $(function() {
 						if (_s._single_view() || _s._edit_view()) {
 							_s.delete_item();
 						} else if (_s._list_view()) {
+							_s.delete_item();
 						}
 					}
 					break;
