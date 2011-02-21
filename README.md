@@ -13,4 +13,6 @@ To add keyboard shortcut [Evernote](http://www.evernote.com/) Chrome extension.
 - *s*: Sort
 - */*: Search
 - *&lt;Shift&gt; + :*: Search notes
+- *&lt;Shift&gt; + j*: Next notebook
+- *&lt;Shift&gt; + k*: Prev notebook
 - *&lt;Shift&gt; + ?*: Show Help

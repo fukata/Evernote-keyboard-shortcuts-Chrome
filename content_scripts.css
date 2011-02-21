@@ -1,3 +1,6 @@
 div#list_view .eks-selected {
 	background: #6FB536;
 }
+.eks-note-selected div.Container {
+	background: #598E52;
+}

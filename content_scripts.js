@@ -19,11 +19,14 @@ $(function() {
 		"TOOLBAR_RESTORE": "div#toolbar_restore",
 		"TOOLBAR_SAVE": "div#toolbar_buttons > div.Done",
 		"EDITOR": "iframe#entinymce_585_ifr",
-		"VIEW_LINKS": "div#view_buttons > div.a"
+		"VIEW_LINKS": "div#view_buttons > div.a",
+		"NOTEBOOKS": "table.Notebooks > tbody > tr"
 	};
 	_s.CLASS = {
 		"SELECTED": "selected",
-		"EKS_SELECTED": "eks-selected"
+		"EKS_SELECTED": "eks-selected",
+		"NOTE_SELECTED": "selected",
+		"EKS_NOTE_SELECTED": "eks-note-selected"
 	};
 	_s.click = function(target) {
                 var evt = document.createEvent( "MouseEvents" );
@@ -53,10 +56,18 @@ $(function() {
 					_s.sort();
                                         break;
 	                        case "J":
-					_s.next_item();
+					if (key.shift) {
+						_s.next_book();
+					} else {
+						_s.next_item();
+					}
 	                                break;
 	                        case "K":
-					_s.prev_item();
+					if (key.shift) {
+						_s.prev_book();
+					} else {
+						_s.prev_item();
+					}
 	                                break;
                                 case "U":
 					_s.display_list_view();
@@ -170,7 +181,6 @@ $(function() {
 		var new_selected = null;
                 if (selected) {
                         selected.removeClass(_s.CLASS.EKS_SELECTED);
-			//$(_s.SELECTOR.NOTE_CHECKBOX, selected).attr("checked", false);
 
                         var index = items.index(selected);
                         console.log("selected.index="+index);
@@ -185,11 +195,9 @@ $(function() {
 
 		if (new_selected) {
 			new_selected.addClass(_s.CLASS.EKS_SELECTED);
-			//$(_s.SELECTOR.NOTE_CHECKBOX, new_selected).attr("checked", true);
 			if (_s._single_view()) {
 				$(_s.SELECTOR.NOTE_CHECKBOX, new_selected).trigger("click");
 			}
-			//$(_s.SELECTOR.NOTE_CHECKBOX, new_selected).trigger("change");
 		}
 	}
 	_s.next_item = function() {
@@ -232,6 +240,57 @@ $(function() {
 	};
 	_s.search_notes = function() {
 		console.log("search_notes");
+	};
+	_s._selected_book = function() {
+		var selected = $(_s.SELECTOR.NOTEBOOKS+" > td."+_s.CLASS.EKS_NOTE_SELECTED);
+		if (selected.size()==0) selected = $(_s.SELECTOR.NOTEBOOKS+" > td."+_s.CLASS.NOTE_SELECTED).last();
+		return selected.parent('tr').eq(0);
+	};
+	_s._nav_book_select = function(callback) {
+                var books = $(_s.SELECTOR.NOTEBOOKS);
+                var selected = _s._selected_book();
+                console.log("books.size="+books.size()+", selected.selector="+selected.selector);
+                if (books.size()==0) return;
+
+                console.log("books.first="+books.first());
+		var new_selected = null;
+                if (selected) {
+                        selected.children('td').eq(0).removeClass(_s.CLASS.EKS_NOTE_SELECTED);
+
+                        var index = books.index(selected);
+                        console.log("selected.index="+index);
+                        if (!(index>-1 && index<books.size())) {
+                                new_selected = books.first();
+                        } else {
+				new_selected = callback(books,selected,index);
+			}
+                } else {
+                        new_selected = books.first();
+                }
+
+		if (new_selected) {
+			new_selected.children('td').eq(0).addClass(_s.CLASS.EKS_NOTE_SELECTED);
+		}
+	};
+	_s.next_book = function() {
+		console.log("next_book");
+		_s._nav_book_select(function(books,selected,index){
+                        if (index+1<books.size()) {
+                                return books.eq(index+1);
+                        } else {
+                                return books.last();
+                        }
+		});
+	};
+	_s.prev_book = function() {
+		console.log("prev_book");
+		_s._nav_book_select(function(books,selected,index){
+                        if (index-1>0) {
+                                return books.eq(index-1);
+                        } else {
+                                return books.first();
+                        }
+		});
 	};
 	_s.show_help = function() {
 		console.log("show_help");
