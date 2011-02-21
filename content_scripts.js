@@ -18,7 +18,8 @@ $(function() {
 		"TOOLBAR_DELETE": "div#toolbar_delete",
 		"TOOLBAR_RESTORE": "div#toolbar_restore",
 		"TOOLBAR_SAVE": "div#toolbar_buttons > div.Done",
-		"EDITOR": "iframe#entinymce_585_ifr"
+		"EDITOR": "iframe#entinymce_585_ifr",
+		"VIEW_LINKS": "div#view_buttons > div.a"
 	};
 	_s.CLASS = {
 		"SELECTED": "selected",
@@ -57,6 +58,9 @@ $(function() {
 	                        case "K":
 					_s.prev_item();
 	                                break;
+                                case "U":
+					_s.display_list_view();
+                                        break;
                                 case "X":
 					_s.select_item();
                                         break;
@@ -129,9 +133,10 @@ $(function() {
 			$(_s.SELECTOR.NOTE_CHECKBOX, selected).trigger("click");
 		}
 	};
-	_s.open_list_view = function() {
-		console.log("open_list_view");
+	_s.display_list_view = function() {
+		console.log("display_list_view");
 		if (!_s._single_view()) return;
+		_s.click($(_s.SELECTOR.VIEW_LINKS+":eq(1) > img").get(0));
 	};
 	_s.delete_item = function() {
 		console.log("delete_item");
