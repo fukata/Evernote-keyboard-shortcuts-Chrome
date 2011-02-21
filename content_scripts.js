@@ -10,13 +10,15 @@ $(function() {
 		"NOTE_LIST": "div#list_view > div > div > table > tbody > tr",
 		"NOTE_CHECKBOX": "span.gwt-CheckBox > input[type=checkbox]",
 		"NOTE_LIST_VIEW": "div#list_view",
+		"NOTE_GRID_VIEW": "div#grid_view",
 		"NOTE_SINGLE_VIEW": "div#single_view",
 		"NOTE_EDIT_VIEW": "div#edit_view",
 		"TOOLBAR_CREATE": "div#toolbar_new",
 		"TOOLBAR_EDIT": "div#toolbar_edit",
 		"TOOLBAR_DELETE": "div#toolbar_delete",
 		"TOOLBAR_RESTORE": "div#toolbar_restore",
-		"TOOLBAR_SAVE": "div#toolbar_buttons > div.Done"
+		"TOOLBAR_SAVE": "div#toolbar_buttons > div.Done",
+		"EDITOR": "iframe#entinymce_585_ifr"
 	};
 	_s.CLASS = {
 		"SELECTED": "selected",
@@ -50,10 +52,10 @@ $(function() {
 					_s.sort();
                                         break;
 	                        case "J":
-					_s.nav_new_item();
+					_s.next_item();
 	                                break;
 	                        case "K":
-					_s.nav_old_item();
+					_s.prev_item();
 	                                break;
                                 case "X":
 					_s.select_item();
@@ -71,37 +73,44 @@ $(function() {
 	                                break;
 	                }
 	        });
-	        $('body').bind('keyup', function(e){
-	                var key = _s.keyinfo(e);
-			switch (key.keyCode) {
-				case _s.KEYCODE.ENTER:
-					_s.open_item();
-					break;
-				case _s.KEYCODE.DELETE:
-					if (key.shift) {
-						if (_s._single_view() || _s._edit_view()) {
-							_s.delete_item();
-						} else if (_s._list_view()) {
-							_s.delete_item();
-						}
-					}
-					break;
-				default:
-					break;
-			}
-			switch (key.keyChar) {
-				case "S":
-					if (key.shift && key.ctrl) {
-						_s.save_item();
-					}
-					break;
-				case "O":
-					_s.open_item();
-					break;
-				default:
-					break;
-			}
-	        });
+		var bind_keyup = function(e){
+                        var key = _s.keyinfo(e);
+                        switch (key.keyCode) {
+                                case _s.KEYCODE.ENTER:
+                                        if (!_s._edit_view()) {
+                                                _s.open_item();
+                                        }
+                                        break;
+                                case _s.KEYCODE.DELETE:
+                                        if (key.shift) {
+                                                if (_s._single_view() || _s._edit_view()) {
+                                                        _s.delete_item();
+                                                } else if (_s._list_view()) {
+                                                        _s.delete_item();
+                                                }
+                                        }
+                                        break;
+                                default:
+                                        break;
+                        }
+                        switch (key.keyChar) {
+                                case "S":
+                                        if (key.shift && key.ctrl) {
+                                                _s.save_item();
+                                        }
+                                        break;
+                                case "O":
+                                        if (!_s._edit_view()) {
+                                                _s.open_item();
+                                        }
+                                        break;
+                                default:
+                                        break;
+                        }
+                };
+	        $('body').bind('keyup', bind_keyup);
+		var editor = $($(_s.SELECTOR.EDITOR).get(0).contentDocument.getElementById('tinymce'));
+	        editor.bind('keyup', bind_keyup);
 	};
 	_s.create_item = function() {
 		console.log("create_item");
@@ -115,11 +124,15 @@ $(function() {
 	};
 	_s.open_item = function() {
 		console.log("open_item");
-		var selected = $(_s.SELECTOR.NOTE_LIST+"."+_s.CLASS.SELECTED);
+		var selected = _s._selected();
 		if (selected) {
 			$(_s.SELECTOR.NOTE_CHECKBOX, selected).trigger("click");
 		}
-	}
+	};
+	_s.open_list_view = function() {
+		console.log("open_list_view");
+		if (!_s._single_view()) return;
+	};
 	_s.delete_item = function() {
 		console.log("delete_item");
 		if (_s._edit_view()) return;
@@ -132,6 +145,9 @@ $(function() {
 	};
 	_s._list_view = function() {
 		return $(_s.SELECTOR.NOTE_LIST_VIEW).css("display")!="none";
+	};
+	_s._grid_view = function() {
+		return $(_s.SELECTOR.NOTE_GRID_VIEW).css("display")!="none";
 	};
 	_s._single_view = function() {
 		return $(_s.SELECTOR.NOTE_SINGLE_VIEW).css("display")!="none";
@@ -171,8 +187,8 @@ $(function() {
 			//$(_s.SELECTOR.NOTE_CHECKBOX, new_selected).trigger("change");
 		}
 	}
-	_s.nav_new_item = function() {
-		console.log("nav_new_item");
+	_s.next_item = function() {
+		console.log("next_item");
 		_s._nav_item_select(function(items,selected,index){
                         if (index+1<items.size()) {
                                 return items.eq(index+1);
@@ -181,8 +197,8 @@ $(function() {
                         }
 		});
 	};
-	_s.nav_old_item = function() {
-		console.log("nav_old_item");
+	_s.prev_item = function() {
+		console.log("prev_item");
                 _s._nav_item_select(function(items,selected,index){
                         if (index-1>0) {
                                 return items.eq(index-1);

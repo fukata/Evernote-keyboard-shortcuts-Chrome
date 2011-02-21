@@ -6,8 +6,8 @@ To add keyboard shortcut [Evernote](http://www.evernote.com/) Chrome extension.
 - *e*: Edit
 - *&lt;Shift&gt; + &lt;Delete&gt;*: Delete
 - *&lt;Shift&gt; + &lt;Ctrl&gt; + s*: Save and close
-- *j*: New item
-- *k*: Old item
+- *j*: Next item
+- *k*: Prev item
 - *x*: Selected item
 - *s*: Sort
 - */*: Search
