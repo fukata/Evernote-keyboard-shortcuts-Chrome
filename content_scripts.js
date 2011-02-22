@@ -115,9 +115,15 @@ $(function() {
                                         }
                                         break;
                                 case "O":
-                                        if (!_s._edit_view()) {
-                                                _s.open_item();
-                                        }
+					if (key.shift) {
+						if (_s._list_view()) {
+							_s.open_book();
+						}
+					} else {
+	                                        if (!_s._edit_view()) {
+	                                                _s.open_item();
+	                                        }
+					}
                                         break;
                                 default:
                                         break;
@@ -292,6 +298,14 @@ $(function() {
                         }
 		});
 	};
+	_s.open_book = function() {
+		console.log("open_book");
+		var selected = _s._selected_book();
+		if (selected) {
+			//_s.click(selected.find('div.Notebook').get(0));
+			selected.click();
+		}
+	}
 	_s.show_help = function() {
 		console.log("show_help");
 	};
